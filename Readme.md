@@ -134,8 +134,3 @@ Contributions are welcome! Please fork the repository, create a new branch, and 
 ## License
 
 This project is licensed under the ISC License. See the [LICENSE](LICENSE) file for more details.
-
-```
-
-This README template provides a clear structure and instructions for your **User Authentication Microservice** using JWT and Node.js.
-```
