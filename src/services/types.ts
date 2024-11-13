@@ -9,3 +9,9 @@ export type tokenPayload = {
   iat: number;
   exp: number;
 };
+
+export type userSession = {
+  createdAt: number;
+};
+
+export type sessionStore = Record<string, userSession>;
