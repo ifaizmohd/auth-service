@@ -1,12 +1,19 @@
-import { TokenService } from '.';
 import User from '../models/User.model';
-import { HashService } from './Hash.service';
 import { UserType } from './types';
-import { ValidationService } from './index';
+import {
+  ValidationService,
+  HashService,
+  UserProfileService,
+  TokenService,
+} from './index';
 
 export class UserService {
   static async findUserByEmail(email: string) {
     return await User.findOne({ email });
+  }
+
+  static async findUserById(userId: string) {
+    return await User.findOne({ _id: userId });
   }
 
   static async saveUser(user: UserType) {
@@ -28,8 +35,13 @@ export class UserService {
     // saving user.
     const newUser = new User({ name, email, password: hashPassword });
     await newUser.save();
+    // create new user profile for user.
+    await UserProfileService.createNewUserProfile(newUser?._id);
     // generating accessToken.
-    const accessToken = TokenService.generateToken(`${newUser?._id}`, '1h');
+    const accessToken = TokenService.generateToken(
+      `${newUser?._id}`,
+      TokenService.getTokenExpiryTime('user')
+    );
     return {
       message: 'User created successfully',
       accessToken,
@@ -56,9 +68,10 @@ export class UserService {
       existingUser.password
     );
     if (isPasswordMatched) {
+      const role = await UserProfileService.getUserRole(existingUser.id);
       const accessToken = TokenService.generateToken(
         `${existingUser._id}`,
-        '1h'
+        TokenService.getTokenExpiryTime(role?.name)
       );
       return {
         message: 'User logged-in successfully!',
