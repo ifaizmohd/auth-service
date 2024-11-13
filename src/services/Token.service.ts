@@ -12,4 +12,15 @@ export class TokenService {
   ) {
     return jwt.verify(token, this.jwtSecret, {}, callback);
   }
+
+  static getTokenExpiryTime(role: string | undefined): string {
+    switch (role) {
+      case 'student':
+        return '1d';
+      case 'microservice':
+        return '1h';
+      default:
+        return '1h';
+    }
+  }
 }

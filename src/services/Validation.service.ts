@@ -1,3 +1,5 @@
+import { ROLES } from '../models/constants';
+import { ValidationObject } from '../models/ValidationObject.model';
 import { UserType } from './types';
 
 export class ValidationService {
@@ -65,5 +67,25 @@ export class ValidationService {
       message: 'User validation completed successfully.',
       isValid: true,
     };
+  }
+
+  static validateRole(name: string) {
+    if (ROLES.indexOf(name) > -1) {
+      return {
+        message: 'Role validation completed successfully!',
+        isValid: true,
+      };
+    }
+    return {
+      message: 'Role name is incorrect!',
+      isValid: false,
+    };
+  }
+
+  static isUserManagementReadAccess(permissions: [string]) {
+    if (permissions.indexOf('user-mgmt-read') > -1) {
+      return new ValidationObject(true, 'Access granted');
+    }
+    return new ValidationObject(false, 'Access Denied');
   }
 }
