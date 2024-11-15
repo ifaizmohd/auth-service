@@ -3,6 +3,7 @@ import UserProfile from '../models/UserProfile.model';
 import { RoleService } from './index';
 import { ResponseObject } from '../models/ResponseObject.model';
 import { HTTP_STATUS } from '../utils';
+import { DEFAULT_ROLE } from './constants';
 
 export class UserProfileService {
   static async getUserProfile(userId: string) {
@@ -18,6 +19,8 @@ export class UserProfileService {
     try {
       const newUserProfile = new UserProfile({ userId });
       await newUserProfile.save();
+      // assign default role to the user.
+      await this.assignRoleToUser(userId.toString(), DEFAULT_ROLE);
       // Add logging here
     } catch (error) {
       throw new Error(
@@ -44,13 +47,16 @@ export class UserProfileService {
     }
   }
 
-  static async findUserProfileByUserId(userId: string | Types.ObjectId) {
-    return await UserProfile.findOne({ userId }).populate('role.name');
+  static async findUserProfileByUserId(userId: string) {
+    return await UserProfile.findOne({ userId }).populate('role');
   }
 
   static async getUserRole(userId: string) {
     const userProfile = await this.findUserProfileByUserId(userId);
-    return await RoleService.findRoleByUserProfile(userProfile?.role);
+    if (!userProfile?.role) {
+      return null;
+    }
+    return await RoleService.findRoleByUserProfile(userProfile?.role?._id);
   }
 
   static async assignRoleToUser(userId: string, roleName: string) {

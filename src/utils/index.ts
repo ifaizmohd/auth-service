@@ -1,3 +1,5 @@
+import ROUTES, { API_PREFIX } from '../routes/Routes.constants';
+
 export const HTTP_STATUS = {
   CONTINUE: 100,
   SUCCESS: {
@@ -9,6 +11,7 @@ export const HTTP_STATUS = {
   },
   CLIENT_ERROR: {
     BAD_REQUEST: 400,
+    NOT_AUTHORIZED: 401,
     FORBIDDEN: 403,
     NOT_FOUND: 404,
     MEDIA_TYPE_NOT_SUPPORTED: 415,
@@ -19,6 +22,20 @@ export const HTTP_STATUS = {
   },
 };
 
+/**
+ * @deprecated We are moving from bearer authentication to custom header authentication. This method won't be used in further
+ * authentication process.
+ * @param authHeader
+ * @returns
+ */
 export function extractTokenFromHeader(authHeader: string) {
   return authHeader && authHeader.split(' ')[1];
 }
+
+export function isLoginRequest(url: string): boolean {
+  return url === `${API_PREFIX}${ROUTES.LOGIN}`;
+}
+
+export const isRegisterUserRequest = (url: string) => {
+  return url === `${API_PREFIX}${ROUTES.REGISTER}`;
+};

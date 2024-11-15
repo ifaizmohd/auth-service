@@ -1,3 +1,5 @@
+import { IUserSessionData } from '../types/AuthMiddlewareInterface';
+
 export interface UserType {
   name: string;
   email: string;
@@ -12,6 +14,7 @@ export type tokenPayload = {
 
 export type userSession = {
   createdAt: number;
+  userData: IUserSessionData | undefined;
 };
 
 export type sessionStore = Record<string, userSession>;

@@ -4,5 +4,6 @@ export const ROLES = [
   'principal',
   'admin',
   'super-user',
+  'guest-user',
   'test-user',
 ];

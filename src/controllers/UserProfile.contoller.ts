@@ -3,7 +3,6 @@ import { BaseController } from './BaseController';
 import { UserProfileService } from '../services/UserProfile.service';
 import { AuthRequest } from './types';
 import ROUTES from '../routes/Routes.constants';
-import { AuthMiddleware } from '../middlewares/Auth.middleware';
 
 class UserProfileController extends BaseController {
   constructor() {
@@ -12,11 +11,7 @@ class UserProfileController extends BaseController {
   }
 
   initializeRoutes(): void {
-    this.router.put(
-      ROUTES.UPDATE_USER_PROFILE,
-      AuthMiddleware.isUserLoggedIn,
-      this.updateProfile
-    );
+    this.router.put(ROUTES.UPDATE_USER_PROFILE, this.updateProfile);
     this.router.put(ROUTES.ASSIGN_ROLE_TO_USER, this.assignRoleToTheUser);
     this.router.get(ROUTES.GET_USER_PROFILE, this.getUserProfile);
   }

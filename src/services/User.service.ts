@@ -6,6 +6,7 @@ import {
   UserProfileService,
   TokenService,
 } from './index';
+import { DEFAULT_ROLE } from './constants';
 
 export class UserService {
   static async findUserByEmail(email: string) {
@@ -68,10 +69,12 @@ export class UserService {
       existingUser.password
     );
     if (isPasswordMatched) {
-      const role = await UserProfileService.getUserRole(existingUser.id);
+      const role = await UserProfileService.getUserRole(
+        existingUser._id.toString()
+      );
       const accessToken = TokenService.generateToken(
         `${existingUser._id}`,
-        TokenService.getTokenExpiryTime(role?.name)
+        TokenService.getTokenExpiryTime(role?.name || DEFAULT_ROLE)
       );
       return {
         message: 'User logged-in successfully!',

@@ -1,6 +1,7 @@
 import { RedisClientType, createClient } from 'redis';
+import { IRedisService } from '../types/RedisServiceInterface';
 
-class RedisService {
+class RedisService implements IRedisService {
   redisClient: RedisClientType | null = null;
 
   connect() {

@@ -17,13 +17,12 @@ export async function sessionManager(
   // If session ID cookie doesn't exist, create a new session
   if (!sessionId || !SessionService.getUserSession(sessionId)) {
     // Generate a unique session ID;
-    sessionId = await SessionService.createNewSession();
+    sessionId = await SessionService.createNewSession(req?.user);
     res.cookie('sessionId', sessionId, {
       httpOnly: true,
       maxAge: SessionService.EXPIRY_TIME * 1000,
     });
   }
   // Attach session data to the request object for access in routes
-  req.session = SessionService.getUserSession(sessionId);
   next();
 }

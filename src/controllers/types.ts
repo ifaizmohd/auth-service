@@ -1,7 +1,9 @@
 import { Request } from 'express';
 import { userSession } from '../services/types';
+import { JwtPayload } from 'jsonwebtoken';
+import { IUserSessionData } from '../types/AuthMiddlewareInterface';
 
-interface UserTokenPayload {
+export interface UserTokenPayload extends JwtPayload {
   userId: string;
   iat: number;
   exp: number;
@@ -12,6 +14,6 @@ export interface AuthRequest extends Request {
 }
 
 export interface CustomRequest extends Request {
-  user?: UserTokenPayload;
+  user?: IUserSessionData;
   session?: userSession;
 }
