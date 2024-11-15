@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { HTTP_STATUS, isLoginRequest } from '../utils';
+import { HTTP_STATUS, isLoginRequest, isRegisterUserRequest } from '../utils';
 import { TokenService, UserProfileService } from '../services';
 import { JwtPayload, VerifyErrors } from 'jsonwebtoken';
 import { UserTokenPayload } from '../controllers/types';
@@ -9,21 +9,23 @@ import {
   IUserSessionData,
 } from '../types/AuthMiddlewareInterface';
 
+/**
+ * Authentication middleware for verifying user tokens and enriching request object with user data.
+ *
+ * This middleware intercepts incoming requests, checks for authentication tokens (except login and register requests), verifies the token using TokenService, retrieves user details from the session store (Redis), and adds the user data to the request object for further processing.
+ */
 export class AuthMiddleware implements IAuthService {
   /**
-   * 1. extract the token from request.
-   * 2. verify the token is valid or not.
-   * 3. verify the session is valid or not.
-   * 4. if all data is valid then set the user data in the session.
-   * 5. if not then return the response.
-   * * Note: check for guest user session.
-   * @param req
-   * @param res
-   * @param next
+   * Handles incoming requests by verifying user tokens and enriching the request object with user data.
+   *
+   * @param {Request} req - The incoming request object.
+   * @param {Response} res - The outgoing response object.
+   * @param {NextFunction} next - The next function in the middleware chain.
+   * @returns {Promise<void>} A promise that resolves when the middleware processing is complete.
    */
   async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
     // Bypassing the login request because it won't have the token and sessionId
-    if (isLoginRequest(req.url)) {
+    if (isLoginRequest(req.url) || isRegisterUserRequest(req.url)) {
       next();
     } else {
       // extract the token from request header.
@@ -39,7 +41,14 @@ export class AuthMiddleware implements IAuthService {
     }
   }
 
-  verifyToken(token: string, res: Response) {
+  /**
+   * Verifies a JWT token using TokenService.
+   *
+   * @param {string} token - The token to be verified.
+   * @param {Response} res - The response object for sending error messages.
+   * @returns {UserTokenPayload} The decoded user information from the token if valid, otherwise an empty object.
+   */
+  verifyToken(token: string, res: Response): UserTokenPayload {
     let user: UserTokenPayload = { iat: 0, userId: '', exp: 0 };
     const callback = (
       err: VerifyErrors | null,
@@ -58,11 +67,10 @@ export class AuthMiddleware implements IAuthService {
   }
 
   /**
-   * 1. get the user object.
-   * 2. get the user profile.
-   * 3. get the user roles if any.
-   * 4. return the minimum data required to save in session like roles and permissions.
-   * @param userId
+   * Retrieves user details from the session store (Redis) for the given user ID.
+   *
+   * @param {string} userId - The user ID to fetch data for.
+   * @returns {Promise<IUserSessionData | null>} A promise that resolves with user session data if found, otherwise null.
    */
   async getUserDetailsForSession(
     userId: string
@@ -74,6 +82,13 @@ export class AuthMiddleware implements IAuthService {
     return null;
   }
 
+  /**
+   * Constructs user session data with user ID, role name, and role permissions.
+   *
+   * @param {string} userId - The user ID.
+   * @param {IRole} roles - The user's role information.
+   * @returns {IUserSessionData} The constructed user session data object.
+   */
   getUserData(userId: string, roles: IRole): IUserSessionData {
     return {
       userId,
@@ -83,62 +98,4 @@ export class AuthMiddleware implements IAuthService {
       },
     };
   }
-
-  // static isUserLoggedIn(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const authHeader = <string>req.headers['x-auth-token'] || '';
-  //     const token = extractTokenFromHeader(authHeader);
-  //     const callback = (
-  //       err: VerifyErrors | null,
-  //       payload: JwtPayload | undefined | string
-  //     ) => {
-  //       if (err) {
-  //         res.status(403).json({ message: err.message, name: err.name });
-  //       } else {
-  //         Object.defineProperty(req, 'user', {
-  //           value: payload,
-  //         });
-  //         next();
-  //       }
-  //     };
-  //     TokenService.verifyToken(token, callback);
-  //   } catch (error) {
-  //     console.error(error);
-  //     res
-  //       .status(500)
-  //       .json({ message: 'Error occurred while validating user.' });
-  //   }
-  // }
-
-  // static async isUserPermitted(
-  //   req: AuthRequest,
-  //   res: Response,
-  //   next: NextFunction
-  // ) {
-  //   try {
-  //     const { userId } = req?.user || {};
-  //     if (userId) {
-  //       const userRole = await UserProfileService.getUserRole(userId);
-  //       const permissions: [string] = <[string]>(
-  //         userRole?.permissions?.map((permission) => permission?.name)
-  //       );
-  //       const { isValid, message } =
-  //         ValidationService.isUserManagementReadAccess(permissions);
-  //       if (!isValid) {
-  //         res.status(HTTP_STATUS.CLIENT_ERROR.FORBIDDEN).json(message);
-  //       } else {
-  //         next();
-  //       }
-  //     } else {
-  //       res
-  //         .status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-  //         .json({ message: 'Please login to perform this action.' });
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     res
-  //       .status(HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR)
-  //       .json({ message: 'Error occurred while validating user permissions.' });
-  //   }
-  // }
 }

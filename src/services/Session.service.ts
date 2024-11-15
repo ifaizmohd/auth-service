@@ -66,14 +66,29 @@ export class SessionService {
   ): Promise<void> {
     // Store the session data in Redis with an expiration time
     if (this.redisClient)
-      await this.redisClient.setEx(
-        sessionId,
-        this.EXPIRY_TIME,
-        JSON.stringify(session)
-      );
+      await this.redisClient.set(sessionId, JSON.stringify(session), {
+        EX: this.EXPIRY_TIME,
+      });
     else {
       // If Redis is not available, use the in-memory session store
       this.sessionStore[sessionId] = session;
+    }
+  }
+
+  static async updateSession(sessionId: string, updates: object) {
+    try {
+      // fetch the existing session.
+      const sessionData = await this.redisClient?.get(sessionId);
+      if (!sessionData) {
+        throw new Error('Session not found!');
+      }
+      const parsedData = JSON.parse(sessionData);
+      const updatedSession = { ...parsedData, ...updates };
+      await this.redisClient?.set(sessionId, JSON.stringify(updatedSession), {
+        EX: this.EXPIRY_TIME,
+      });
+    } catch (error) {
+      console.error('Failed to update session:', error);
     }
   }
 }

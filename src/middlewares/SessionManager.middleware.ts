@@ -22,7 +22,12 @@ export async function sessionManager(
       httpOnly: true,
       maxAge: SessionService.EXPIRY_TIME * 1000,
     });
+  } else {
+    // Save session data.
+    const userSessionData = {
+      userData: req?.user,
+    };
+    await SessionService.updateSession(sessionId, userSessionData);
   }
-  // Attach session data to the request object for access in routes
   next();
 }
