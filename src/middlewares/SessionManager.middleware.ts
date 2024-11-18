@@ -15,7 +15,7 @@ export async function sessionManager(
 ) {
   let sessionId = req?.cookies?.sessionId;
   // If session ID cookie doesn't exist, create a new session
-  if (!sessionId || !SessionService.getUserSession(sessionId)) {
+  if (!sessionId) {
     // Generate a unique session ID;
     sessionId = await SessionService.createNewSession(req?.user);
     res.cookie('sessionId', sessionId, {

@@ -33,9 +33,13 @@ export function extractTokenFromHeader(authHeader: string) {
 }
 
 export function isLoginRequest(url: string): boolean {
-  return url === `${API_PREFIX}${ROUTES.LOGIN}`;
+  return url === `${API_PREFIX}${ROUTES.LOGIN.url}`;
 }
 
 export const isRegisterUserRequest = (url: string) => {
-  return url === `${API_PREFIX}${ROUTES.REGISTER}`;
+  return url === `${API_PREFIX}${ROUTES.REGISTER.url}`;
+};
+
+export const skipValidations = (url: string): boolean => {
+  return isLoginRequest(url) || isRegisterUserRequest(url);
 };

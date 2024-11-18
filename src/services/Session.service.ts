@@ -30,7 +30,7 @@ export class SessionService {
    * @returns {Promise<string>} A promise that resolves with the newly created session ID.
    */
   static async createNewSession(
-    userData: IUserSessionData | undefined
+    userData?: IUserSessionData | undefined
   ): Promise<string> {
     // Generate a unique session ID
     const sessionId: string = uuidV4();
@@ -80,7 +80,8 @@ export class SessionService {
       // fetch the existing session.
       const sessionData = await this.redisClient?.get(sessionId);
       if (!sessionData) {
-        throw new Error('Session not found!');
+        await this.createNewSession();
+        return;
       }
       const parsedData = JSON.parse(sessionData);
       const updatedSession = { ...parsedData, ...updates };
@@ -88,7 +89,7 @@ export class SessionService {
         EX: this.EXPIRY_TIME,
       });
     } catch (error) {
-      console.error('Failed to update session:', error);
+      console.error(`Failed to update session: ${sessionId}`, error);
     }
   }
 }

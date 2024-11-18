@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import { JwtPayload, VerifyErrors } from 'jsonwebtoken';
 import { BaseController } from './BaseController';
 import ROUTES from '../routes/Routes.constants';
-import { extractTokenFromHeader } from '../utils';
 import { TokenService, UserService } from '../services';
+import { SessionService } from '../services/Session.service';
+import { HTTP_STATUS } from '../utils';
 
 /**
  * Authentication controller for handling user registration, login, and authentication.
@@ -22,9 +23,10 @@ class AuthenticationController extends BaseController {
    * Binds the appropriate methods to the defined routes (e.g., registerUser, login)
    */
   initializeRoutes(): void {
-    this.router.post(ROUTES.REGISTER, this.registerUser);
-    this.router.post(ROUTES.LOGIN, this.login);
-    this.router.post(ROUTES.AUTHENTICATE, this.authenticateUser);
+    this.router.post(ROUTES.REGISTER.url, this.registerUser);
+    this.router.post(ROUTES.LOGIN.url, this.login);
+    this.router.post(ROUTES.AUTHENTICATE.url, this.authenticateUser);
+    this.router.get(ROUTES.GET_USER_SESSION.url, this.getUserSession);
   }
 
   /**
@@ -96,8 +98,7 @@ class AuthenticationController extends BaseController {
   async authenticateUser(req: Request, res: Response): Promise<void> {
     try {
       // Extract token from authorization header
-      const authHeader = req.headers['authorization'] || '';
-      const token = extractTokenFromHeader(authHeader);
+      const token = <string>req.headers['x-auth-token'] || '';
       // Define callback function for token verification
       const callback = (
         err: VerifyErrors | null,
@@ -115,6 +116,20 @@ class AuthenticationController extends BaseController {
         console.error(error.message);
         res.status(500).json({ message: error.message });
       }
+    }
+  }
+
+  async getUserSession(req: Request, res: Response): Promise<void> {
+    try {
+      const sessionId = req?.cookies?.sessionId;
+      const userSession = SessionService.getUserSession(sessionId);
+      if (sessionId) {
+        res.status(HTTP_STATUS.SUCCESS.OK).json({ userSession });
+      } else {
+        res.status(HTTP_STATUS.SUCCESS.OK).json({});
+      }
+    } catch (error) {
+      console.log('Error occurred in getuserSession - \n', error);
     }
   }
 }

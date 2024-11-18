@@ -10,9 +10,12 @@ class RoleController extends BaseController {
   }
 
   initializeRoutes(): void {
-    this.router.get(ROUTES.GET_ALL_ROLES, this.getRoles);
-    this.router.post(ROUTES.CREATE_ROLE, this.createNewRole);
-    this.router.put(ROUTES.ADD_PERMISSION_TO_ROLE, this.addPermissionToRole);
+    this.router.get(ROUTES.GET_ALL_ROLES.url, this.getRoles);
+    this.router.post(ROUTES.CREATE_ROLE.url, this.createNewRole);
+    this.router.put(
+      ROUTES.ADD_PERMISSION_TO_ROLE.url,
+      this.addPermissionToRole
+    );
   }
 
   /**

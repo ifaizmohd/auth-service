@@ -11,9 +11,9 @@ class UserProfileController extends BaseController {
   }
 
   initializeRoutes(): void {
-    this.router.put(ROUTES.UPDATE_USER_PROFILE, this.updateProfile);
-    this.router.put(ROUTES.ASSIGN_ROLE_TO_USER, this.assignRoleToTheUser);
-    this.router.get(ROUTES.GET_USER_PROFILE, this.getUserProfile);
+    this.router.put(ROUTES.UPDATE_USER_PROFILE.url, this.updateProfile);
+    this.router.put(ROUTES.ASSIGN_ROLE_TO_USER.url, this.assignRoleToTheUser);
+    this.router.get(ROUTES.GET_USER_PROFILE.url, this.getUserProfile);
   }
 
   async getUserProfile(req: AuthRequest, res: Response) {

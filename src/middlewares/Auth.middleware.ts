@@ -24,7 +24,7 @@ export class AuthMiddleware implements IAuthService {
    * @returns {Promise<void>} A promise that resolves when the middleware processing is complete.
    */
   async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // Bypassing the login request because it won't have the token and sessionId
+    // Bypassing the login/signup request because it won't have the token and sessionId
     if (isLoginRequest(req.url) || isRegisterUserRequest(req.url)) {
       next();
     } else {

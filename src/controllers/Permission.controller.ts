@@ -11,8 +11,8 @@ class PermissionController extends BaseController {
   }
 
   initializeRoutes(): void {
-    this.router.get(ROUTES.GET_PERMISSION_DETAILS, this.getPermission);
-    this.router.post(ROUTES.CREATE_PERMISSION, this.createPermission);
+    this.router.get(ROUTES.GET_PERMISSION_DETAILS.url, this.getPermission);
+    this.router.post(ROUTES.CREATE_PERMISSION.url, this.createPermission);
   }
 
   async getPermission(req: Request, res: Response) {
