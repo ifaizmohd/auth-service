@@ -1,9 +1,9 @@
-export class ResponseObject {
+export class ResponseObject<T = object> {
   message: string;
   httpStatus: number;
-  payload?: unknown;
+  payload?: T;
 
-  constructor(message: string, httpStatus: number, payload?: unknown) {
+  constructor(message: string, httpStatus: number, payload?: T) {
     this.message = message;
     this.httpStatus = httpStatus;
     this.payload = payload;
