@@ -43,3 +43,8 @@ export const isRegisterUserRequest = (url: string) => {
 export const skipValidations = (url: string): boolean => {
   return isLoginRequest(url) || isRegisterUserRequest(url);
 };
+
+export const isClientRequest = (url: string) => {
+  const urlArray = url.split('/');
+  return urlArray.includes('client');
+};

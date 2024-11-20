@@ -4,33 +4,21 @@ dotenv.config({
   path: path.join(__dirname, `../config/.env.${process.env.NODE_ENV}`),
 });
 import express from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
 import { registerRutes } from './routes';
 import { Database } from './services/Database.service';
-import { sessionManager } from './middlewares/SessionManager.middleware';
 import { RedisClient } from './services/Redis.service';
-import { AuthMiddleware } from './middlewares/Auth.middleware';
-import { PermissionMiddleware } from './middlewares/Permissions.middleware';
+import { applyMiddlewares } from './middlewares';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// options for cors.
-const corsOptions = {
-  origin: `http://localhost:${PORT}`,
-  allowedHeaders: ['Content-Type'],
-};
-const authMiddleWare = new AuthMiddleware();
-const permissionsMiddleware = new PermissionMiddleware();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(cors(corsOptions));
-app.use(authMiddleWare.handle.bind(authMiddleWare));
-app.use(sessionManager);
-app.use(permissionsMiddleware.hasPermissions.bind(permissionsMiddleware));
+// Set the view engine to EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+// Serve static files from the 'public' folder
+app.use(express.static(path.join(__dirname, '../public')));
+// Applying middlewares.
+applyMiddlewares(app, PORT);
 
 // Your routes goes here.
 registerRutes(app);

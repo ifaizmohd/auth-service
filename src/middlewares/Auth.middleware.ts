@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { HTTP_STATUS, isLoginRequest, isRegisterUserRequest } from '../utils';
+import {
+  HTTP_STATUS,
+  isClientRequest,
+  isLoginRequest,
+  isRegisterUserRequest,
+} from '../utils';
 import { TokenService, UserProfileService } from '../services';
 import { JwtPayload, VerifyErrors } from 'jsonwebtoken';
 import { UserTokenPayload } from '../controllers/types';
@@ -8,6 +13,7 @@ import {
   IRole,
   IUserSessionData,
 } from '../types/AuthMiddlewareInterface';
+import { getIsAssetsRequest } from '../utils/client.utils';
 
 /**
  * Authentication middleware for verifying user tokens and enriching request object with user data.
@@ -25,7 +31,12 @@ export class AuthMiddleware implements IAuthService {
    */
   async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
     // Bypassing the login/signup request because it won't have the token and sessionId
-    if (isLoginRequest(req.url) || isRegisterUserRequest(req.url)) {
+    if (
+      isLoginRequest(req.url) ||
+      isRegisterUserRequest(req.url) ||
+      isClientRequest(req.url) ||
+      getIsAssetsRequest(req.url)
+    ) {
       next();
     } else {
       // extract the token from request header.

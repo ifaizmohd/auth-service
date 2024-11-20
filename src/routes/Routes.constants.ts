@@ -4,6 +4,7 @@ export const API_PREFIX: string = '/api';
 export const USER_PREFIX: string = '/user';
 export const ROLE_PREFIX: string = '/role';
 export const PERMISSION_PREFIX: string = '/permission';
+export const CLIENT: string = '/client';
 
 const ROUTES = {
   // Auth routes.
