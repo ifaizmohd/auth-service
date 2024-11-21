@@ -17,9 +17,10 @@ class ViewController extends BaseController {
       if (req?.url === '/') {
         res.render('index', {
           title,
+          page: 'Home',
         });
       } else {
-        res.render('login', { title });
+        res.render('login', { title, page: 'Login' });
       }
     } catch (error) {
       console.log(error);

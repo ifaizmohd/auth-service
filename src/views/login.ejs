@@ -1,8 +1,9 @@
-<%- include('layout') %> <%- include('apiHandler') %>
+<%- include('layout') %>
 <script type="text/javascript">
+  let email;
+  let password;
+  let loginButton;
   function login() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
     fetch('http://localhost:3001/api/login', {
       method: 'POST',
       headers: {
@@ -10,8 +11,8 @@
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email,
-        password,
+        email: email?.value,
+        password: password?.value,
       }),
     })
       .then((res) => {
@@ -19,11 +20,28 @@
         window.sessionStorage.setItem('token', token);
         return res.json();
       })
-      .then((d) => console.log('[DEBUG] response = ', d))
+      .then((userDetails) => {
+        window.sessionStorage.setItem(
+          'user',
+          JSON.stringify(userDetails?.data)
+        );
+        // redirect user to home page.
+        window.location.href = '/client';
+      })
       .catch((err) => console.log('[ERROR] ', err));
   }
+
+  window.addEventListener('load', (e) => {
+    email = document.getElementById('email');
+    password = document.getElementById('password');
+    loginButton = document.getElementById('login-btn');
+    loginButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      login();
+    });
+  });
 </script>
-<div class="container">
+<div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
       <h2 class="text-center">Login</h2>
@@ -38,6 +56,7 @@
               id="email"
               aria-describedby="emailHelp"
               required
+              onchange="(e) => handleChange(e)"
             />
           </div>
           <div id="emailHelp" class="form-text">
@@ -46,10 +65,16 @@
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" required />
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            required
+            onchange="() => handleChange()"
+          />
         </div>
         <div class="d-grid gap-2 col-6 mx-auto">
-          <button type="button" class="btn btn-primary" onclick="login()">
+          <button type="button" class="btn btn-primary" id="login-btn">
             Login
           </button>
         </div>

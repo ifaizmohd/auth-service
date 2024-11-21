@@ -70,14 +70,12 @@ class AuthenticationController extends BaseController {
       // Extract email and password from the request body
       const { email, password } = req?.body || {};
       // Delegate user login to the UserService.
-      const { message, httpStatus, accessToken } = await UserService.userLogin(
-        email,
-        password
-      );
+      const { message, httpStatus, accessToken, data } =
+        await UserService.userLogin(email, password);
       // Set access token header if available.
       if (accessToken) res.setHeader('x-auth-token', accessToken);
       // Send response with message and status code
-      res.status(httpStatus).json({ message });
+      res.status(httpStatus).json({ message, data });
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
