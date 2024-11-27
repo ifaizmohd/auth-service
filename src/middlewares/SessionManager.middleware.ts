@@ -19,7 +19,7 @@ export async function sessionManager(
     // Generate a unique session ID;
     sessionId = await SessionService.createNewSession(req?.user);
     res.cookie('sessionId', sessionId, {
-      httpOnly: true,
+      httpOnly: false,
       maxAge: SessionService.EXPIRY_TIME * 1000,
     });
   } else {

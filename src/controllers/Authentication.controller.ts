@@ -4,7 +4,8 @@ import { BaseController } from './BaseController';
 import ROUTES from '../routes/Routes.constants';
 import { TokenService, UserService } from '../services';
 import { SessionService } from '../services/Session.service';
-import { HTTP_STATUS } from '../utils';
+import { getUserNavigationBasedOnRoles, HTTP_STATUS } from '../utils';
+import { CustomRequest } from './types';
 
 /**
  * Authentication controller for handling user registration, login, and authentication.
@@ -27,6 +28,7 @@ class AuthenticationController extends BaseController {
     this.router.post(ROUTES.LOGIN.url, this.login);
     this.router.post(ROUTES.AUTHENTICATE.url, this.authenticateUser);
     this.router.get(ROUTES.GET_USER_SESSION.url, this.getUserSession);
+    this.router.get(ROUTES.GET_NAVIGATION_DATA.url, this.getNavigationData);
   }
 
   /**
@@ -128,6 +130,17 @@ class AuthenticationController extends BaseController {
       }
     } catch (error) {
       console.log('Error occurred in getuserSession - \n', error);
+    }
+  }
+
+  getNavigationData(req: CustomRequest, res: Response): void {
+    const { user } = req;
+    if (user && user.role) {
+      const navData = getUserNavigationBasedOnRoles(user?.role?.name);
+      res.status(HTTP_STATUS.SUCCESS.OK).json(navData);
+    } else {
+      const navData = getUserNavigationBasedOnRoles('test-user');
+      res.status(HTTP_STATUS.SUCCESS.OK).json(navData);
     }
   }
 }

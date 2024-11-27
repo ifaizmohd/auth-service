@@ -3,6 +3,7 @@ import {
   HTTP_STATUS,
   isClientRequest,
   isLoginRequest,
+  isNavigationRequest,
   isRegisterUserRequest,
 } from '../utils';
 import { TokenService, UserProfileService } from '../services';
@@ -35,7 +36,8 @@ export class AuthMiddleware implements IAuthService {
       isLoginRequest(req.url) ||
       isRegisterUserRequest(req.url) ||
       isClientRequest(req.url) ||
-      getIsAssetsRequest(req.url)
+      getIsAssetsRequest(req.url) ||
+      isNavigationRequest(req.url)
     ) {
       next();
     } else {
@@ -66,9 +68,7 @@ export class AuthMiddleware implements IAuthService {
       payload: JwtPayload | undefined | string
     ) => {
       if (err) {
-        res
-          .status(HTTP_STATUS.CLIENT_ERROR.NOT_AUTHORIZED)
-          .json({ message: 'Invalid Token' });
+        res.status(HTTP_STATUS.CLIENT_ERROR.FORBIDDEN);
       } else {
         user = <UserTokenPayload>payload;
       }
