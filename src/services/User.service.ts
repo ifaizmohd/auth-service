@@ -78,8 +78,14 @@ export class UserService {
       );
       return {
         message: 'User logged-in successfully!',
-        httpStatus: 201,
+        httpStatus: 200,
         accessToken,
+        data: {
+          name: existingUser.name,
+          email: existingUser.email,
+          role: role?.name,
+          permissions: role?.permissions,
+        },
       };
     }
     return {

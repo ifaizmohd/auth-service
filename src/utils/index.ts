@@ -43,3 +43,51 @@ export const isRegisterUserRequest = (url: string) => {
 export const skipValidations = (url: string): boolean => {
   return isLoginRequest(url) || isRegisterUserRequest(url);
 };
+
+export const isClientRequest = (url: string) => {
+  const urlArray = url.split('/');
+  return urlArray.includes('client');
+};
+
+export const isNavigationRequest = (url: string) => {
+  return url === `${API_PREFIX}${ROUTES.GET_NAVIGATION_DATA.url}`;
+};
+
+export const RoutesBasedOnRoles = {
+  commonRoutes: [
+    { name: 'Home', slug: '/' },
+    { name: 'My Profile', slug: '/my-profile' },
+    { name: 'Login', slug: '/login' },
+    { name: 'Sign Up', slug: 'sign-up' },
+  ],
+  teacher: [{ name: 'Users', slug: '/users' }],
+  principal: [
+    { name: 'Users', slug: '/users' },
+    { name: 'Roles & Permissions', slug: '/roles-permissions' },
+  ],
+  admin: [
+    { name: 'Users', slug: '/users' },
+    { name: 'Roles & Permissions', slug: '/roles-permissions' },
+  ],
+};
+
+export const getUserNavigationBasedOnRoles = (role: string) => {
+  switch (role) {
+    case 'student':
+      return RoutesBasedOnRoles.commonRoutes;
+    case 'teacher':
+      return [
+        ...RoutesBasedOnRoles.commonRoutes,
+        ...RoutesBasedOnRoles.teacher,
+      ];
+    case 'principal':
+      return [
+        ...RoutesBasedOnRoles.commonRoutes,
+        ...RoutesBasedOnRoles.principal,
+      ];
+    case 'admin':
+      return [...RoutesBasedOnRoles.commonRoutes, ...RoutesBasedOnRoles.admin];
+    default:
+      return RoutesBasedOnRoles.commonRoutes;
+  }
+};

@@ -46,6 +46,11 @@ const ROUTES = {
     url: '/get-permission-details',
     permissionsRequired: [],
   },
+  // Navigation data.
+  GET_NAVIGATION_DATA: {
+    url: '/get-navigation-data',
+    permissionsRequired: [],
+  },
 };
 
 export default ROUTES;
