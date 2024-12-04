@@ -44,6 +44,11 @@ export const skipValidations = (url: string): boolean => {
   return isLoginRequest(url) || isRegisterUserRequest(url);
 };
 
+/**
+ * @depricated we have moved the client to a separate micro service.
+ * @param url
+ * @returns
+ */
 export const isClientRequest = (url: string) => {
   const urlArray = url.split('/');
   return urlArray.includes('client');
