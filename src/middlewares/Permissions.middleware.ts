@@ -6,12 +6,21 @@ import {
   getPermissionBasedOnRoute,
   parseUrlForPermissionsMatch,
 } from './utils';
-import { HTTP_STATUS, skipValidations } from '../utils';
+import {
+  HTTP_STATUS,
+  isClientRequest,
+  isNavigationRequest,
+  skipValidations,
+} from '../utils';
 
 export class PermissionMiddleware implements IPermissionsService {
   hasPermissions(req: CustomRequest, res: Response, next: NextFunction): void {
     try {
-      if (skipValidations(req.url)) {
+      if (
+        skipValidations(req.url) ||
+        isClientRequest(req.url) ||
+        isNavigationRequest(req.url)
+      ) {
         next();
       } else {
         if (req?.user) {
