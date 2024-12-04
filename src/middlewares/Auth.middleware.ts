@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import {
   HTTP_STATUS,
-  isClientRequest,
   isLoginRequest,
   isNavigationRequest,
   isRegisterUserRequest,
@@ -14,7 +13,6 @@ import {
   IRole,
   IUserSessionData,
 } from '../types/AuthMiddlewareInterface';
-import { getIsAssetsRequest } from '../utils/client.utils';
 
 /**
  * Authentication middleware for verifying user tokens and enriching request object with user data.
@@ -35,8 +33,6 @@ export class AuthMiddleware implements IAuthService {
     if (
       isLoginRequest(req.url) ||
       isRegisterUserRequest(req.url) ||
-      isClientRequest(req.url) ||
-      getIsAssetsRequest(req.url) ||
       isNavigationRequest(req.url)
     ) {
       next();
